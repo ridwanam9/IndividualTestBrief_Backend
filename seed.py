@@ -14,9 +14,9 @@ with app.app_context():
 
     # Tambah user
     users = [
-        User(name="Alice", email="alice@example.com", password="alice123"),
-        User(name="Bob", email="bob@example.com", password="bob123"),
-        User(name="Charlie", email="charlie@example.com", password="charlie123")
+        User(name="Alice", email="alice@email.com", password="password"),
+        User(name="Bob", email="bob@email.com", password="password"),
+        User(name="Charlie", email="charlie@email.com", password="password")
     ]
     db.session.add_all(users)
     db.session.commit()
