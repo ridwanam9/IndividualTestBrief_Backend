@@ -4,44 +4,35 @@ from app.models import User, Product, Transaction
 from datetime import datetime, timezone
 import random
 
+
 app = create_app()
 
 with app.app_context():
-    # Clear existing data (opsional, hati-hati di production!)
-    Transaction.query.delete()
-    Product.query.delete()
-    User.query.delete()
+    db.drop_all()
+    db.create_all()
 
-    # Tambah user
-    users = [
-        User(name="Alice", email="alice@email.com", password="password"),
-        User(name="Bob", email="bob@email.com", password="password"),
-        User(name="Charlie", email="charlie@email.com", password="password")
-    ]
-    db.session.add_all(users)
+    # Seed Users
+    user1 = User(name='Alice', email='alice@email.com')
+    user1.set_password('password')
+
+    user2 = User(name='Bob', email='bob@email.com')
+    user2.set_password('password')
+
+    db.session.add_all([user1, user2])
     db.session.commit()
 
-    # Tambah produk
-    products = [
-        Product(name="Sabun Organik", description="Sabun ramah lingkungan", price=15000, stock=100),
-        Product(name="Kopi Lokal", description="Kopi dari petani lokal", price=40000, stock=50),
-        Product(name="Totebag Daur Ulang", description="Tas ramah lingkungan dari bahan daur ulang", price=25000, stock=80)
-    ]
-    db.session.add_all(products)
+    # Seed Products
+    product1 = Product(name='Organic Rice', description='Healthy rice from local farms', price=10.5, stock=100)
+    product2 = Product(name='Reusable Bag', description='Eco-friendly shopping bag', price=3.99, stock=50)
+
+    db.session.add_all([product1, product2])
     db.session.commit()
 
-    # Tambah transaksi random
-    transactions = [
-        Transaction(
-            user_id=random.choice(users).id,
-            product_id=random.choice(products).id,
-            quantity=2,
-            total_price=2 * products[0].price,
-            timestamp=datetime.now(timezone.utc)
-        )
-        for _ in range(5)
-    ]
-    db.session.add_all(transactions)
+    # Seed Transactions
+    transaction1 = Transaction(user_id=user1.id, product_id=product1.id, quantity=2, total_price=21.0)
+    transaction2 = Transaction(user_id=user2.id, product_id=product2.id, quantity=5, total_price=19.95)
+
+    db.session.add_all([transaction1, transaction2])
     db.session.commit()
 
-    print("✅ Data seed berhasil ditambahkan!")
+    print("✅ Seeding completed.")
