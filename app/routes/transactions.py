@@ -6,30 +6,35 @@ bp = Blueprint('transactions', __name__, url_prefix='/transactions')
 @bp.route('/', methods=['GET'])
 def get_transactions():
     transactions = Transaction.query.all()
-    return jsonify([{
-        'id': t.id,
-        'user_id': t.user_id,
-        'product_id': t.product_id,
-        'quantity': t.quantity,
-        'total_price': t.total_price,
-        'timestamp': t.timestamp.isoformat()
-    } for t in transactions])
+    return jsonify([t.to_dict() for t in transactions])
 
 @bp.route('/', methods=['POST'])
 def create_transaction():
-    data = request.json
-    product = Product.query.get(data['product_id'])
+    data = request.get_json()
+    user_id = data['user_id']
+    product_id = data['product_id']
+    quantity = data['quantity']
 
-    if product and product.stock >= data['quantity']:
-        total = product.price * data['quantity']
-        transaction = Transaction(
-            user_id=data['user_id'],
-            product_id=data['product_id'],
-            quantity=data['quantity'],
-            total_price=total
-        )
-        product.stock -= data['quantity']
-        db.session.add(transaction)
-        db.session.commit()
-        return jsonify({'message': 'Transaction successful'}), 201
-    return jsonify({'message': 'Insufficient stock'}), 400
+    product = Product.query.get_or_404(product_id)
+
+    if product.stock < quantity:
+        return jsonify({'error': 'Not enough stock'}), 400
+
+    total_price = quantity * product.price
+    transaction = Transaction(
+        user_id=user_id,
+        product_id=product_id,
+        quantity=quantity,
+        total_price=total_price
+    )
+
+    product.stock -= quantity
+    db.session.add(transaction)
+    db.session.commit()
+
+    return jsonify(transaction.to_dict()), 201
+
+@bp.route('/user/<int:user_id>', methods=['GET'])
+def get_user_transactions(user_id):
+    transactions = Transaction.query.filter_by(user_id=user_id).all()
+    return jsonify([t.to_dict() for t in transactions])
