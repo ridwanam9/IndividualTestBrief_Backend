@@ -11,6 +11,12 @@ cd IndividualTestBrief_Backend
 
 ### **2. Activate Environment(venv)**
 
+First install python vitual environment
+
+```sh
+python -m venv venv
+```
+and then activate the environment
 
 ```sh
 venv\Scripts\activate
