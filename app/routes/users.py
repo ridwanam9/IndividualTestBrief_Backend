@@ -53,18 +53,20 @@ def create_user():
     return jsonify(new_user.to_dict()), 201
 
 
-# PUT /users/<int:id> → Update user
-@bp.route('/<int:id>', methods=['PUT'])
-def update_user(id):
-    user = User.query.get_or_404(id)
-    data = request.get_json()
+# # PUT /users/<int:id> → Update user
+# @bp.route('/<int:id>', methods=['PUT'])
+# def update_user(id):
+#     user = User.query.get_or_404(id)
+#     data = request.get_json()
 
-    user.name = data.get('name', user.name)
-    user.email = data.get('email', user.email)
-    user.password = data.get('password', user.password)
+#     user.name = data.get('name', user.name)
+#     user.email = data.get('email', user.email)
+#     user.password = data.get('password', user.password)
 
-    db.session.commit()
-    return jsonify(user.to_dict()), 200
+#     db.session.commit()
+#     return jsonify(user.to_dict()), 200
+
+# there is an error far update user, will fix it later
 
 # DELETE /users/<int:id> → Delete user
 @bp.route('/<int:id>', methods=['DELETE'])
